@@ -128,6 +128,7 @@ import datetime
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'backend.apiview.user.utils.jwt_response_payload_handler',
 }
 
 
