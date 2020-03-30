@@ -1,5 +1,5 @@
 """
-WSGI config for online_python project.
+WSGI config for vue_shop_api project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "online_python.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vue_shop_api.settings")
 
 application = get_wsgi_application()
