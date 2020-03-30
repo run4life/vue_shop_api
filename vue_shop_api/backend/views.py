@@ -19,31 +19,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
 
-
-class APIRunCodeMixin(object):
-    """
-    运行代码操作
-    """
-
-    def run_code(self, code):
-        """
-        运行所给的代码，并返回执行结果
-        :params code: str, 需要被运行的代码
-        :return: str, 运行结果
-        """
-        try:
-            output = subprocess.check_output(['python', '-c', code],  # 运行代码
-                                             stderr=subprocess.STDOUT,  # 重定向错误输出流到子进程
-                                             universal_newlines=True,  # 将返回执行结果转换为字符串
-                                             timeout=30)  # 设定执行超时时间
-        except subprocess.CalledProcessError as e:  # 捕捉执行失败异常
-            output = e.output  # 获取子进程报错信息
-        except subprocess.TimeoutExpired as e:  # 捕捉超时异常
-            output = '\r\n'.join(['Time Out!', e.output])  # 获取子进程报错，并添加运行超时提示
-        return output  # 返回执行结果
-
-
-class CodeViewSet(APIRunCodeMixin, ModelViewSet):
+class CodeViewSet(ModelViewSet):
     queryset = Code.objects.all()
     serializer_class = CodeSerializer
     authentication_classes = (CsrfExemptSessionAuthentication,)
