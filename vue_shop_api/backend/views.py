@@ -78,39 +78,3 @@ class CodeViewSet(APIRunCodeMixin, ModelViewSet):
         instance = self.get_object()
         serializer = self.serializer_class(instance, data=request.data)
         return self.run_create_or_update(request, serializer)
-
-
-class RunCodeAPIView(APIRunCodeMixin, APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication,)
-
-    def post(self, request, format=None):
-        output = self.run_code(request.data.get('code'))
-        return Response(data={'output': output}, status=status.HTTP_200_OK)
-
-    def get(self, request, format=None):
-        try:
-            code = Code.objects.get(pk=request.query_params.get('id'))
-        except models.ObjectDoesNotExist:
-            return Response(data={'error': 'Object Not Found'}, status=status.HTTP_404_NOT_FOUND)
-        output = self.run_code(code.code)
-        return Response(data={'output': output}, status=status.HTTP_200_OK)
-
-
-def home(request):
-    with open('frontend/index.html', 'rb') as f:
-        content = f.read()
-    return HttpResponse(content)
-
-
-def js(request, filename):
-    with open('frontend/{}'.format(filename), 'rb') as f:
-        js_content = f.read()
-    return HttpResponse(content=js_content,
-                        content_type='application/javascript')  # 返回 js 响应
-
-
-def css(request, filename):
-    with open('frontend/{}'.format(filename), 'rb') as f:
-        css_content = f.read()
-    return HttpResponse(content=css_content,
-                        content_type='text/css')
