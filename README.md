@@ -3,8 +3,8 @@
 pip install django -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install djangorestframework -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install django-rest-swagger -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install djangorestframework-jwt -i https://pypi.tuna.tsinghua.edu.cn/simple
-pip install djangorestframework_simplejwt -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install pyjwt -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install django-cors-headers
 
 python manage.py startapp posts
 python manage.py makemigrations
