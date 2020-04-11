@@ -24,7 +24,7 @@ class LoginView(APIView):
             meta['msg'] = '登录失败'
             meta['status'] = 500
             returndata['meta'] = meta
-            return Response(returndata)
+            return Response(returndata,status=500)
 
         token = create_token({'id': user_object.id, 'name': user_object.username})
         returndata = {}
@@ -40,4 +40,4 @@ class LoginView(APIView):
         meta['status'] = 200
         returndata['data'] = data
         returndata['meta'] = meta
-        return Response(returndata)
+        return Response(returndata,status=200)
