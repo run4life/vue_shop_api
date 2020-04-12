@@ -71,7 +71,7 @@ class RightsView(APIView):
                     for prentrightresult in rightresult[ppid]['children']:
                         if prentrightresult['id'] == right.pid:
                             prentrightresult['children'].append(rightdict)
-            rightresult[ppid]['children'] = prentrightresult
+            #rightresult[ppid]['children'].append(prentrightresult)
             data = rightresult.values()
             returndata['data'] = data
             meta['msg'] = '查询成功'
@@ -81,7 +81,14 @@ class RightsView(APIView):
             return Response(returndata)
 
 class MenusView(APIView):
-    def get(self, request):   
+    def get(self, request): 
+        user_id = request.user.get('id')
+        user_rid = request.user.get('rid')
+        user_rights_object = models.Role.objects.filter(id = user_rid).first()
+        
+        if user_rights_object.ids is not None:
+            user_rights = user_rights_object.ids.split(',')
+
         right_objects = models.Right.objects.all().order_by("id") 
         returndata = {}
         data = {}
@@ -91,6 +98,8 @@ class MenusView(APIView):
             if right.level == 0:
                 rightdict = {}
                 rightdict['id'] = right.id
+                if str(rightdict['id']) not in user_rights:
+                    continue
                 rightdict['authName'] = right.name
                 rightdict['path'] = models.RightApi.objects.filter(right_id=right.id).first().right_api_path
                 rightdict['pid'] = right.pid
@@ -102,6 +111,8 @@ class MenusView(APIView):
             if right.level == 1:
                 rightdict = {}
                 rightdict['id'] = right.id
+                if str(rightdict['id']) not in user_rights:
+                    continue
                 rightdict['authName'] = right.name
                 rightdict['path'] = models.RightApi.objects.filter(right_id=right.id).first().right_api_path
                 rightdict['pid'] = right.pid
@@ -110,6 +121,7 @@ class MenusView(APIView):
                 rightresult[right.pid]['children'].append(tmpresult[right.id])
 
         data = rightresult.values()
+
         returndata['data'] = data
         meta['msg'] = '查询成功'
         meta['status'] = 200

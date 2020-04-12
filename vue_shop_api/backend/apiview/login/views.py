@@ -26,7 +26,7 @@ class LoginView(APIView):
             returndata['meta'] = meta
             return Response(returndata,status=500)
 
-        token = create_token({'id': user_object.id, 'name': user_object.username})
+        token = create_token({'id': user_object.id, 'name': user_object.username, 'rid': user_object.rid})
         returndata = {}
         data = {}
         meta = {}

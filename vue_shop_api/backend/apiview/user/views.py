@@ -12,6 +12,8 @@ class UsersView(APIView):
         pagesize = request.query_params['pagesize']
         pagenum = request.query_params['pagenum']
         
+        user_rid = request.user.get('rid')
+
         if int(pagenum) == 1:
             start = 0
             end = int(pagenum)*int(pagesize)
@@ -19,23 +21,30 @@ class UsersView(APIView):
             start = (int(pagenum) - 1)*int(pagesize)
             end = int(pagenum)*int(pagesize)
 
-        user_objects = models.User.objects.filter(deleted=False).order_by("id")[start:end]
-        
+        #user_objects = models.User.objects.filter(deleted=False).order_by("id")[start:end]
+        user_objects = models.User.objects.filter(deleted=False).order_by("id")
+
         returndata = {}
         data = {}
         meta = {}
         users = []
         for user_object in user_objects:
+            #如果权限id不为0，非超级管理员，不显示超级管理员角色信息
+            if str(user_object.rid) is '1' and str(user_rid) is not '1':
+                continue
             user_dict = {}
             user_dict['id'] = user_object.id
             user_dict['username'] = user_object.username
             user_dict['mobile'] = user_object.mobile
             user_dict['email'] = user_object.email
             user_dict['create_time'] = user_object.create_time
-            user_dict['role_name'] =  user_object.rid
+            #如果创建用户后未配置角色进行判断
+            if user_object.rid is not None:
+                role_object = models.Role.objects.filter(id=user_object.rid, deleted=False).first()
+            user_dict['role_name'] = role_object.role_name
             user_dict['mg_state'] = user_object.state
             users.append(user_dict)
-        data['users'] = users
+        data['users'] = users[start:end]
         meta['msg'] = '获取用户列表成功'
         meta['status'] = 200
         returndata['data'] = data
@@ -173,6 +182,35 @@ class UserStateView(APIView):
         data['mobile'] = user_object.mobile
         data['email'] = user_object.email
         meta['msg'] = '设置用户状态成功'
+        meta['status'] = 200
+        returndata['data'] = data
+        returndata['meta'] = meta
+        return Response(returndata,status=200)
+
+class UserRoleView(APIView):
+
+    def put(self, request, user_id):
+        rid = request.data.get('rid')
+        user_object = models.User.objects.filter(id=user_id, deleted=False).first()
+        if not user_object:
+            returndata = {}
+            meta = {}
+            meta['msg'] = '用户不存在'
+            meta['status'] = 500
+            returndata['meta'] = meta
+            return Response(returndata,status=500)
+        
+        user_object.rid = rid
+        user_object.save()
+        returndata = {}
+        data = {}
+        meta = {}
+        data['id'] = user_object.id
+        data['role_id'] = user_object.rid
+        data['username'] = user_object.username
+        data['mobile'] = user_object.mobile
+        data['email'] = user_object.email
+        meta['msg'] = '设置用户角色成功'
         meta['status'] = 200
         returndata['data'] = data
         returndata['meta'] = meta

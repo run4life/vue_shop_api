@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/vue_shop_api/manage.py",
-            "args": ["runserver"],
+            "args": ["runserver", "8888"],
             "console": "integratedTerminal"
         }
     ]
